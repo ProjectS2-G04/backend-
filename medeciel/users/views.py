@@ -92,7 +92,7 @@ class SignUpView(APIView):
         password = request.data.get("password")
         first_name = request.data.get("first_name")
         last_name = request.data.get("last_name")
-        role = request.data.get("role")  
+        role  = request.data.get("role")  
 
      
         if role not in ["etudiant", "enseignant", "ATS"]:
