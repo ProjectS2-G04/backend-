@@ -90,24 +90,43 @@ class SignUpView(APIView):
     def post(self, request):
         email = request.data.get("email")
         password = request.data.get("password")
+        first_name = request.data.get("first_name")
+        last_name = request.data.get("last_name")
         role = request.data.get("role")  
 
+     
         if role not in ["etudiant", "enseignant", "ATS"]:
             return Response({"error": "Invalid role selection"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not email or not password:
-            return Response({"error": "Email and password are required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not email or not password or not first_name or not last_name:
+            return Response({"error": "All fields are required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not ListePatient.objects.filter(email=email).exists():
+       
+        if not ListePatient.objects.filter(email=email).exists():  
             return Response({"error": "You are not in ListePatient, registration failed."}, status=status.HTTP_403_FORBIDDEN)
 
+   
         if User.objects.filter(email=email).exists():
             return Response({"error": "User already exists"}, status=status.HTTP_400_BAD_REQUEST)
 
-        user = User.objects.create(email=email, password=make_password(password), role=role)
-        user.save()
+    
+        user = User.objects.create_user(
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            role=role  
+        )
 
-        return Response({"message": "Registration successful"}, status=status.HTTP_201_CREATED)
+        refresh = RefreshToken.for_user(user)
+
+        return Response({
+            "message": "Registration successful",
+            "role": user.role,  
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+        }, status=status.HTTP_201_CREATED)
     
 
 
