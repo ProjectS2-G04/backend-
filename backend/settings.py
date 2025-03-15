@@ -40,7 +40,14 @@ INSTALLED_APPS = [
     "rest_framework",
     "accounts",
     "corsheaders",
+    'rest_framework_simplejwt',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -130,3 +137,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Allow frontend to communicate with backend
 ]
+
+AUTH_USER_MODEL = 'accounts.User'
